@@ -1,0 +1,19 @@
+# temp dir
+temp/
+output/
+.ipynb_checkpoints/
+build/
+dist/
+htmlcov/
+deepec/__pycache__/
+deepec/__pycashe__/*.pyc
+deepec/*.pyc
+*.log
+*.swp
+*.spec
+*.sh
+log.txt
+.coverage
+
+/*.egg-info
+/*.egg
