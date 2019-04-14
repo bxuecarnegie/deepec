@@ -10,13 +10,15 @@ def predict_ec(ref_db_file, target_fasta_file, output_file, output_dir):
 
     blastp_result = output_dir+'/blastp_result_temp.txt'
     run_blastp(target_fasta_file, blastp_result, ref_db_file) 
-    
-    seq_based_ec_prediction_results = read_best_blast_result(blastp_result)
-    
-    with open(output_file, 'w') as fp:
-        for each_query_id in seq_based_ec_prediction_results:
-            each_ec_number = seq_based_ec_prediction_results[each_query_id][0]
-            fp.write('%s\t%s\n'%(each_query_id, each_ec_number))
+    try:
+        seq_based_ec_prediction_results = read_best_blast_result(blastp_result)
+
+        with open(output_file, 'w') as fp:
+            for each_query_id in seq_based_ec_prediction_results:
+                each_ec_number = seq_based_ec_prediction_results[each_query_id][0]
+                fp.write('%s\t%s\n'%(each_query_id, each_ec_number))
+    except:
+        pass
 
 def run_blastp(target_fasta, blastp_result, db_dir):    
     threads = 1
