@@ -152,7 +152,6 @@ def merge_dl_seq_results(output_dir):
             fp2.write('%s\n'%(line.strip()))
     try:        
         with open('%s/Blastp_result.txt'%(output_dir), 'r') as fp:
-            fp.readline()
             for line in fp:
                 fp2.write('%s\n'%(line.strip()))
     except:
