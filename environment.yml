@@ -11,13 +11,10 @@ dependencies:
   - ca-certificates=2019.3.9=hecc5488_0
   - certifi=2019.3.9=py36_0
   - icu=58.2=hf484d3e_1000
-  - libblas=3.8.0=4_openblas
-  - libcblas=3.8.0=4_openblas
   - libffi=3.2.1=he1b5a44_1006
   - libgfortran=3.0.0=1
   - ncurses=6.1=hf484d3e_1002
   - numpy=1.16.2=py36h7fc5cc3_0
-  - openblas=0.3.5=ha44fe06_0
   - openssl=1.1.1b=h14c3975_1
   - pip=19.0.3=py36_0
   - python=3.6.7=h381d211_1004
@@ -55,5 +52,3 @@ dependencies:
     - tensorflow==1.5.0
     - tensorflow-tensorboard==1.5.1
     - werkzeug==0.14.1
-prefix: /home/jyryu3161/anaconda3/envs/deepec
-
