@@ -13,7 +13,7 @@ It should be noted that Python 3.7 is currently not supported.
 2. Create and activate a conda environment
 
         conda env create -f environment.yml
-        source activate deepec
+        conda activate deepec
 
 ##Example
 
