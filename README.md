@@ -1,6 +1,7 @@
-#DeepEC
+# DeepEC
+This is a fork of [DeepEC](https://bitbucket.org/kaistsystemsbiology/deepec/src/master/). Changes were made for integration with newer versions of [E2P2](https://github.com/carnegie/E2P2).
 
-##Procedure
+## Procedure
 
 **Note**: 
 Size of the protein sequence input file should be adjusted according to the memory size of your computer. 
@@ -16,7 +17,7 @@ It should be noted that Python 3.7 is currently not supported.
         conda env create -f environment.yml
         conda activate deepec
 
-##Example
+## Example
 
 - Run DeepEC
 
