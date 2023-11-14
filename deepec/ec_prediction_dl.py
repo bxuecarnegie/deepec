@@ -112,11 +112,11 @@ def predict_dl(df, output_file, DeepEC_model, MultiLabelBinarizer=None, threshol
     X_temp = df.values
     new_X = []
     for i in range(len(X_temp)):
-        temp = np.reshape(X_temp[i], (1000, 21))
+        temp = np.reshape(X_temp[i], (MAX_SEQ_LEN, AA_LEN))
         new_X.append(temp)
 
     X = np.asarray(new_X)
-    X = X.reshape(X.shape[0], 1000, 21, 1)
+    X = X.reshape(X.shape[0], MAX_SEQ_LEN, AA_LEN, 1)
 
     model = load_model(DeepEC_model)
 
