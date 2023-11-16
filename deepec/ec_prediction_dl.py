@@ -3,22 +3,15 @@ import gzip
 from Bio import SeqIO
 from keras.models import load_model
 import numpy as np
-import pandas as pd
 import sys
-import os
-import glob
-import shutil
-import logging
-import time
-import subprocess
 import copy
 
 
 MIN_NUM_OF_SEQS = 10
 CLEAN_EC = True
 MAX_SEQ_LEN = 1000
-# Ignore minim sequence length
-MIN_SEQ_LEN = 10
+# Ignore minim sequence length, original length is 10
+MIN_SEQ_LEN = 0
 
 AA_ENCODING = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y', 'X']
 AA_SCORING = \
@@ -78,7 +71,7 @@ def one_hot_encoding(seq, aa_score_info):
 
 def run_one_hot_encoding(fasta_file, temp_file):
     aa_score_info = score_info()
-    feature_names = ['Feature%s' % (i) for i in range(1, MAX_SEQ_LEN * AA_LEN + 1)]
+    feature_names = ['Feature%s' % i for i in range(1, MAX_SEQ_LEN * AA_LEN + 1)]
 
     # Using gzip due to the size of output
     with open(fasta_file, 'r') as input_handle, gzip.open(temp_file, 'wt') as fp:
@@ -89,8 +82,7 @@ def run_one_hot_encoding(fasta_file, temp_file):
                 seq_id = seq_record.id
                 seq = seq_record.seq
 
-                # Remove min seq len for now
-                if 0 <= len(seq) <= MAX_SEQ_LEN:
+                if MIN_SEQ_LEN <= len(seq) <= MAX_SEQ_LEN:
                     if len(seq) < MAX_SEQ_LEN:
                         seq = fill_aa(seq)
                     encoded_vector = one_hot_encoding(seq, aa_score_info)
@@ -103,7 +95,7 @@ def run_one_hot_encoding(fasta_file, temp_file):
 
 # Merging predicts
 def predict_dl(df, output_file, DeepEC_model, MultiLabelBinarizer=None, threshold=0.5):
-    if (sys.version_info > (3, 0)):
+    if sys.version_info > (3, 0):
         import _pickle as cPickle
     else:
         import cPickle

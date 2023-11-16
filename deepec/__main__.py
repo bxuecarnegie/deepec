@@ -11,7 +11,6 @@ else:
 from contextlib import ExitStack
 import atexit
 
-import copy
 import pandas as pd
 
 from deepec import utils

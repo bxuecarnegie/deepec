@@ -1,7 +1,3 @@
-from Bio import SeqIO
-import gzip
-import shutil
-import logging
 import subprocess
 
 BLASTP_THREADS = 1

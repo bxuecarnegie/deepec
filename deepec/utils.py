@@ -1,8 +1,6 @@
 import argparse
-import copy
 import os
 import shutil
-import pandas as pd
 from Bio import SeqIO
 
 
@@ -81,7 +79,7 @@ def read_prediction_results(result_file):
             if '_SEPARATED_SEQUENCE_' in query:
                 query = query.split('_SEPARATED_SEQUENCE_')[0].strip()
             predicted_ec = sptlist[1].strip()
-            dnn_activity = sptlist[2].strip()
+            # dnn_activity = sptlist[2].strip()
             if predicted_ec != 'EC number not predicted':
                 if query not in ec_results:
                     ec_results[query] = [predicted_ec]
