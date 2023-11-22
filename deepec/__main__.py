@@ -28,27 +28,18 @@ def main():
     file_manager = ExitStack()
     atexit.register(file_manager.close)
 
-    # DeepEC4d_oh = pkg_resources.resource_filename('deepec', 'data/DeepEC_4d.h5')
-    # MB4d_oh = pkg_resources.resource_filename('deepec', 'data/multilabelbinarizer_dl_4digit.pkl')
+    deep_ec4d_oh_ref = importlib_resources.files('deepec.data') / 'DeepEC_4d.h5'
+    deep_ec4d_oh = file_manager.enter_context(importlib_resources.as_file(deep_ec4d_oh_ref))
+    mb4d_oh_ref = importlib_resources.files('deepec.data') / 'multilabelbinarizer_dl_4digit.pkl'
+    mb4d_oh = file_manager.enter_context(importlib_resources.as_file(mb4d_oh_ref))
 
-    DeepEC4d_oh_ref = importlib_resources.files('deepec.data') / 'DeepEC_4d.h5'
-    DeepEC4d_oh = file_manager.enter_context(importlib_resources.as_file(DeepEC4d_oh_ref))
-    MB4d_oh_ref = importlib_resources.files('deepec.data') / 'multilabelbinarizer_dl_4digit.pkl'
-    MB4d_oh = file_manager.enter_context(importlib_resources.as_file(MB4d_oh_ref))
+    deep_ec3d_oh_ref = importlib_resources.files('deepec.data') / 'DeepEC_3d.h5'
+    deep_ec3d_oh = file_manager.enter_context(importlib_resources.as_file(deep_ec3d_oh_ref))
+    mb3d_oh_ref = importlib_resources.files('deepec.data') / 'multilabelbinarizer_dl_3digit.pkl'
+    mb3d_oh = file_manager.enter_context(importlib_resources.as_file(mb3d_oh_ref))
 
-    # DeepEC3d_oh = pkg_resources.resource_filename('deepec', 'data/DeepEC_3d.h5')
-    # MB3d_oh = pkg_resources.resource_filename('deepec', 'data/multilabelbinarizer_dl_3digit.pkl')
-
-    DeepEC3d_oh_ref = importlib_resources.files('deepec.data') / 'DeepEC_3d.h5'
-    DeepEC3d_oh = file_manager.enter_context(importlib_resources.as_file(DeepEC3d_oh_ref))
-    MB3d_oh_ref = importlib_resources.files('deepec.data') / 'multilabelbinarizer_dl_3digit.pkl'
-    MB3d_oh = file_manager.enter_context(importlib_resources.as_file(MB3d_oh_ref))
-
-    # DeepEC_enzyme_oh = pkg_resources.resource_filename('deepec', 'data/Binary_class.h5')
-    # ref_db_file = pkg_resources.resource_filename('deepec', 'data/ref_low_seq_db.dmnd')
-
-    DeepEC_enzyme_ref = importlib_resources.files('deepec.data') / 'Binary_class.h5'
-    DeepEC_enzyme_oh = file_manager.enter_context(importlib_resources.as_file(DeepEC_enzyme_ref))
+    deep_ec_enzyme_ref = importlib_resources.files('deepec.data') / 'Binary_class.h5'
+    deep_ec_enzyme_oh = file_manager.enter_context(importlib_resources.as_file(deep_ec_enzyme_ref))
     ref_db_file_ref = importlib_resources.files('deepec.data') / 'ref_low_seq_db.dmnd'
     ref_db_file = file_manager.enter_context(importlib_resources.as_file(ref_db_file_ref))
 
@@ -73,13 +64,13 @@ def main():
     temp_df = pd.read_csv(temp_file, index_col=0)
 
     enzyme_output_file = '%s/Enzyme_prediction.txt' % (output_dir)
-    ec_prediction_dl.predict_dl(temp_df, enzyme_output_file, DeepEC_enzyme_oh)
+    ec_prediction_dl.predict_dl(temp_df, enzyme_output_file, deep_ec_enzyme_oh)
 
     dl4_output_file = '%s/4digit_EC_prediction.txt' % (output_dir)
-    ec_prediction_dl.predict_dl(temp_df, dl4_output_file, DeepEC4d_oh, MB4d_oh, threshold)
+    ec_prediction_dl.predict_dl(temp_df, dl4_output_file, deep_ec4d_oh, mb4d_oh, threshold)
 
     dl3_output_file = '%s/3digit_EC_prediction.txt' % (output_dir)
-    ec_prediction_dl.predict_dl(temp_df, dl3_output_file, DeepEC3d_oh, MB3d_oh, threshold)
+    ec_prediction_dl.predict_dl(temp_df, dl3_output_file, deep_ec3d_oh, mb3d_oh, threshold)
 
     target_fasta_file = '%s/low_seq_candidates.txt' % (output_dir)
     utils.merge_dl_prediction_results(output_dir, dl4_output_file, dl3_output_file, enzyme_output_file, fasta_file,
