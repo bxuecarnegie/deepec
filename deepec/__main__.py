@@ -55,28 +55,28 @@ def main():
         os.mkdir(output_dir)
 
     # One-hot encoding
-    temp_file = '%s/SwissProt_input.csv' % (output_dir)
-    temp_fasta_file = '%s/temp_fasta.fa' % (output_dir)
+    temp_file = '%s/SwissProt_input.csv' % output_dir
+    temp_fasta_file = '%s/temp_fasta.fa' % output_dir
 
     ec_prediction_dl.preprocessing(fasta_file, temp_fasta_file)
     ec_prediction_dl.run_one_hot_encoding(temp_fasta_file, temp_file)
 
     temp_df = pd.read_csv(temp_file, index_col=0)
 
-    enzyme_output_file = '%s/Enzyme_prediction.txt' % (output_dir)
+    enzyme_output_file = '%s/Enzyme_prediction.txt' % output_dir
     ec_prediction_dl.predict_dl(temp_df, enzyme_output_file, deep_ec_enzyme_oh)
 
-    dl4_output_file = '%s/4digit_EC_prediction.txt' % (output_dir)
+    dl4_output_file = '%s/4digit_EC_prediction.txt' % output_dir
     ec_prediction_dl.predict_dl(temp_df, dl4_output_file, deep_ec4d_oh, mb4d_oh, threshold)
 
-    dl3_output_file = '%s/3digit_EC_prediction.txt' % (output_dir)
+    dl3_output_file = '%s/3digit_EC_prediction.txt' % output_dir
     ec_prediction_dl.predict_dl(temp_df, dl3_output_file, deep_ec3d_oh, mb3d_oh, threshold)
 
-    target_fasta_file = '%s/low_seq_candidates.txt' % (output_dir)
+    target_fasta_file = '%s/low_seq_candidates.txt' % output_dir
     utils.merge_dl_prediction_results(output_dir, dl4_output_file, dl3_output_file, enzyme_output_file, fasta_file,
                                       target_fasta_file)
 
-    output_file = '%s/Blastp_result.txt' % (output_dir)
+    output_file = '%s/Blastp_result.txt' % output_dir
     ec_prediction_seq.predict_ec(ref_db_file, target_fasta_file, output_file, output_dir)
 
     utils.merge_dl_seq_results(output_dir)

@@ -21,7 +21,7 @@ AA_LEN = len(AA_ENCODING)
 
 
 def preprocessing(fasta_file, temp_file):
-    l = MAX_SEQ_LEN
+    max_len = MAX_SEQ_LEN
 
     with open(fasta_file, 'r') as fp, open(temp_file, 'w') as input_handle:
         for seq_record in SeqIO.parse(input_handle, "fasta"):
@@ -31,9 +31,9 @@ def preprocessing(fasta_file, temp_file):
                 fp.write('>%s\n' % seq_id)
                 fp.write('%s\n' % (seq.strip()))
             else:
-                for i in range(0, len(seq) - l + 1, 100):
-                    new_seq_id = '%s_SEPARATED_SEQUENCE_(%s_%s)' % (seq_id, i + 1, i + l + 1)
-                    new_seq = seq[i:i + l]
+                for i in range(0, len(seq) - max_len + 1, 100):
+                    new_seq_id = '%s_SEPARATED_SEQUENCE_(%s_%s)' % (seq_id, i + 1, i + max_len + 1)
+                    new_seq = seq[i:i + max_len]
                     fp.write('>%s\n' % new_seq_id)
                     fp.write('%s\n' % new_seq)
     return
@@ -94,7 +94,7 @@ def run_one_hot_encoding(fasta_file, temp_file):
 
 
 # Merging predicts
-def predict_dl(df, output_file, DeepEC_model, MultiLabelBinarizer=None, threshold=0.5):
+def predict_dl(df, output_file, deep_ec_model, multi_label_binarizer=None, threshold=0.5):
     if sys.version_info > (3, 0):
         import _pickle as cPickle
     else:
@@ -110,28 +110,28 @@ def predict_dl(df, output_file, DeepEC_model, MultiLabelBinarizer=None, threshol
     X = np.asarray(new_X)
     X = X.reshape(X.shape[0], MAX_SEQ_LEN, AA_LEN, 1)
 
-    model = load_model(DeepEC_model)
+    model = load_model(deep_ec_model)
 
     y_predicted = model.predict(X)
     enzyme_list = []
 
-    if MultiLabelBinarizer is None:
+    if multi_label_binarizer is None:
         with open(output_file, 'w') as fp:
             fp.write('Query ID\tPredicted class\tDNN activity\n')
             for i in range(len(y_predicted)):
-                socre = y_predicted[i][1]
+                score = y_predicted[i][1]
                 if y_predicted[i][1] > 0.5:
                     enzyme_list.append(seq_ids[i])
-                    fp.write('%s\t%s\t%s\n' % (seq_ids[i], 'Enzyme', socre))
+                    fp.write('%s\t%s\t%s\n' % (seq_ids[i], 'Enzyme', score))
                 else:
-                    fp.write('%s\t%s\t%s\n' % (seq_ids[i], 'Non-enzyme', 1 - socre))
+                    fp.write('%s\t%s\t%s\n' % (seq_ids[i], 'Non-enzyme', 1 - score))
     else:
         original_y_predicted = copy.deepcopy(y_predicted)
 
         y_predicted[y_predicted >= threshold] = 1
         y_predicted[y_predicted < threshold] = 0
 
-        with open(MultiLabelBinarizer, 'rb') as fid:
+        with open(multi_label_binarizer, 'rb') as fid:
             lb = cPickle.load(fid)
         # y_predicted_results = lb.inverse_transform(y_predicted)
 

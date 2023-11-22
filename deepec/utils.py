@@ -1,5 +1,6 @@
 import argparse
 import os
+import re
 import shutil
 from Bio import SeqIO
 
@@ -69,16 +70,21 @@ def read_ec_list(filename):
     return ec_list
 
 
+def result_line_parser(line):
+    sptlist = re.split(r'\t', line.strip())
+    query = re.split(r'[|\s]', sptlist[0].strip())[0]
+    if '_SEPARATED_SEQUENCE_' in query:
+        query = query.split('_SEPARATED_SEQUENCE_')[0].strip()
+    res = sptlist[1].strip()
+    return query, res
+
+
 def read_prediction_results(result_file):
     ec_results = {}
     with open(result_file, 'r') as fp:
         fp.readline()
         for line in fp:
-            sptlist = line.strip().split('\t')
-            query = sptlist[0].strip()
-            if '_SEPARATED_SEQUENCE_' in query:
-                query = query.split('_SEPARATED_SEQUENCE_')[0].strip()
-            predicted_ec = sptlist[1].strip()
+            query, predicted_ec = result_line_parser(line)
             # dnn_activity = sptlist[2].strip()
             if predicted_ec != 'EC number not predicted':
                 if query not in ec_results:
@@ -86,7 +92,6 @@ def read_prediction_results(result_file):
                 else:
                     ec_results[query].append(predicted_ec)
                     ec_results[query] = list(set(ec_results[query]))
-
     return ec_results
 
 
@@ -101,14 +106,12 @@ def get_prediction_results(ec_4digit_results, ec_3digit_results, enzyme_results)
                     for each_digit_ec in ec_3digit_results[query]:
                         if each_digit_ec in predicted_ec:
                             flag3 = True
-
                 if flag3 is True:
                     if query not in final_one_digit_ec_results:
                         final_one_digit_ec_results[query] = [predicted_ec]
                     else:
                         final_one_digit_ec_results[query].append(predicted_ec)
                         final_one_digit_ec_results[query] = list(set(final_one_digit_ec_results[query]))
-
     return final_one_digit_ec_results
 
 
@@ -118,18 +121,12 @@ def merge_dl_prediction_results(output_dir, dl4_output_file, dl3_output_file, en
     with open(enzyme_output_file, 'r') as fp:
         fp.readline()
         for line in fp:
-            sptlist = line.strip().split('\t')
-            query = sptlist[0].strip()
-            if '_SEPARATED_SEQUENCE_' in query:
-                query = query.split('_SEPARATED_SEQUENCE_')[0].strip()
-
-            enzyme_info = sptlist[1].strip()
+            query, enzyme_info = result_line_parser(line)
             if 'Non-enzyme' not in enzyme_info:
                 enzyme_results[query] = 1
 
     ec_4digit_results = read_prediction_results(dl4_output_file)
     ec_3digit_results = read_prediction_results(dl3_output_file)
-
     final_one_digit_ec_results = get_prediction_results(ec_4digit_results, ec_3digit_results, enzyme_results)
 
     with open('%s/DeepEC_Result_DL.txt' % (output_dir), 'w') as fp:
@@ -141,23 +138,24 @@ def merge_dl_prediction_results(output_dir, dl4_output_file, dl3_output_file, en
     fp = open(target_fasta_file, 'w')
     input_handle = open(fasta_file, "r")
     for seq_record in SeqIO.parse(input_handle, "fasta"):
-        seq_id = seq_record.id
+        sptlist = re.split(r'[|\t\s]', seq_record.id.strip())
+        seq_id = sptlist[0].strip()
         if seq_id in enzyme_results:
             if seq_id not in final_one_digit_ec_results:
-                fp.write('>%s\n' % (seq_id))
-                fp.write('%s\n' % (seq_record.seq))
+                fp.write('>%s\n' % seq_id)
+                fp.write('%s\n' % seq_record.seq)
     fp.close()
 
 
 def merge_dl_seq_results(output_dir):
-    fp2 = open('%s/DeepEC_Result.txt' % (output_dir), 'w')
+    fp2 = open('%s/DeepEC_Result.txt' % output_dir, 'w')
     fp2.write('Query ID	Predicted EC number\n')
-    with open('%s/DeepEC_Result_DL.txt' % (output_dir), 'r') as fp:
+    with open('%s/DeepEC_Result_DL.txt' % output_dir, 'r') as fp:
         fp.readline()
         for line in fp:
             fp2.write('%s\n' % (line.strip()))
     try:
-        with open('%s/Blastp_result.txt' % (output_dir), 'r') as fp:
+        with open('%s/Blastp_result.txt' % output_dir, 'r') as fp:
             for line in fp:
                 fp2.write('%s\n' % (line.strip()))
     except OSError:

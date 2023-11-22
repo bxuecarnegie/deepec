@@ -1,3 +1,4 @@
+import re
 import subprocess
 
 BLASTP_THREADS = 1
@@ -14,8 +15,9 @@ def predict_ec(ref_db_file, target_fasta_file, output_file, output_dir):
 
         with open(output_file, 'w') as fp:
             for each_query_id in seq_based_ec_prediction_results:
-                each_ec_number = seq_based_ec_prediction_results[each_query_id][0]
-                fp.write('%s\t%s\n' % (each_query_id, each_ec_number))
+                all_ec_numbers = seq_based_ec_prediction_results[each_query_id][0].split('|')
+                for each_ec_number in sorted(all_ec_numbers):
+                    fp.write('%s\t%s\n' % (each_query_id, each_ec_number))
     except OSError:
         pass
 
@@ -33,10 +35,11 @@ def read_best_blast_result(blastp_result):
     with open(blastp_result, 'r') as fp:
         for line in fp:
             sptlist = line.strip().split('\t')
-            query_id = sptlist[0].strip()
-            db_id = sptlist[1].strip()
+            query = sptlist[0].strip()
+            target = sptlist[1].strip()
 
-            ec_number = db_id.split('|')[1].strip()
+            query_id = re.split(r'[|\s]', query)[0]
+            ec_numbers = set([ec for ec in re.split(r'[|\s]', target)[1:] if ec != ''])
             score = float(sptlist[3].strip())
             qlen = sptlist[4].strip()
             length = sptlist[6].strip()
@@ -45,9 +48,17 @@ def read_best_blast_result(blastp_result):
             coverage = length / float(qlen) * 100
             if coverage >= 75:
                 if query_id not in query_db_set_info:
-                    query_db_set_info[query_id] = [ec_number, score]
+                    query_db_set_info[query_id] = [ec_numbers, score]
                 else:
                     p_score = query_db_set_info[query_id][1]
+                    # Previously doesn't take into account of multiple best results
                     if score > p_score:
-                        query_db_set_info[query_id] = [ec_number, score]
-    return query_db_set_info
+                        query_db_set_info[query_id] = [ec_numbers, score]
+                    elif score == p_score:
+                        cur_ec_numbers = set(query_db_set_info[query_id][0])
+                        cur_ec_numbers.update(ec_numbers)
+                        query_db_set_info[query_id] = [cur_ec_numbers, score]
+    output_dict = {}
+    for query_id in query_db_set_info:
+        output_dict[query_id] = ['|'.join(sorted(query_db_set_info[query_id][0])), query_db_set_info[query_id][1]]
+    return output_dict
