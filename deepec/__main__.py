@@ -61,7 +61,7 @@ def main():
     ec_prediction_dl.preprocessing(fasta_file, temp_fasta_file)
     ec_prediction_dl.run_one_hot_encoding(temp_fasta_file, temp_file)
 
-    temp_df = pd.read_csv(temp_file, index_col=0)
+    temp_df = pd.read_csv(temp_file, compression='gzip', index_col=0)
 
     enzyme_output_file = '%s/Enzyme_prediction.txt' % output_dir
     ec_prediction_dl.predict_dl(temp_df, enzyme_output_file, deep_ec_enzyme_oh)

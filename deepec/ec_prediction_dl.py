@@ -23,7 +23,7 @@ AA_LEN = len(AA_ENCODING)
 def preprocessing(fasta_file, temp_file):
     max_len = MAX_SEQ_LEN
 
-    with open(fasta_file, 'r') as fp, open(temp_file, 'w') as input_handle:
+    with open(fasta_file, 'r') as input_handle, open(temp_file, 'w') as fp:
         for seq_record in SeqIO.parse(input_handle, "fasta"):
             seq_id = seq_record.id
             seq = seq_record.seq
