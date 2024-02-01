@@ -110,7 +110,7 @@ def predict_dl(df, output_file, deep_ec_model, multi_label_binarizer=None, thres
     X = np.asarray(new_X)
     X = X.reshape(X.shape[0], MAX_SEQ_LEN, AA_LEN, 1)
 
-    model = load_model(deep_ec_model)
+    model = load_model(str(deep_ec_model))
 
     y_predicted = model.predict(X)
     enzyme_list = []
