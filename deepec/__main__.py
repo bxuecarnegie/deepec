@@ -4,7 +4,7 @@ import sys
 import time
 
 # import pkg_resources # replacing deprecated package
-if sys.version_info >= (3, 9):
+if sys.version_info >= (3, 7):
     import importlib.resources as importlib_resources
 else:
     import importlib_resources
