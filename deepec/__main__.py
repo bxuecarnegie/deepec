@@ -55,7 +55,7 @@ def main():
         os.mkdir(output_dir)
 
     # One-hot encoding
-    temp_file = '%s/SwissProt_input.csv' % output_dir
+    temp_file = '%s/SwissProt_input.csv.gz' % output_dir
     temp_fasta_file = '%s/temp_fasta.fa' % output_dir
 
     ec_prediction_dl.preprocessing(fasta_file, temp_fasta_file)
