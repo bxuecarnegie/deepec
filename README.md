@@ -10,7 +10,7 @@ It should be noted that Python 3.7 is currently not supported.
 
 1. Clone the repository
 
-        git clone https://bitbucket.org/kaistsystemsbiology/deepec.git
+        git clone git@github.com:bxuecarnegie/deepec.git
 
 2. Create and activate a conda environment
 
