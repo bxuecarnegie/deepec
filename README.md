@@ -17,6 +17,9 @@ It should be noted that Python 3.7 is currently not supported.
         conda env create -f environment.yml
         conda activate deepec
 
+**Note**:
+This "conda" environment is only tested on an Linux-64 architecture. Please make sure you're running the most updated version of conda compatible with your system.
+
 ## Example
 
 - Run DeepEC
